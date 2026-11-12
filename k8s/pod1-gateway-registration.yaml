@@ -1,0 +1,34 @@
+# POD 1 : api-gateway + registration-service (two containers, same pod)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod1-gateway-registration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod1
+  template:
+    metadata:
+      labels:
+        app: pod1
+    spec:
+      containers:
+        - name: api-gateway
+          image: api-gateway:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REGISTRATION_URL
+              value: "http://localhost:5001"      # same pod
+            - name: SEARCH_URL
+              value: "http://search-service:5002" # other pod via Service
+        - name: registration-service
+          image: registration-service:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5001
+          env:
+            - name: MONGO_URI
+              value: "mongodb://host.minikube.internal:27017"  # MongoDB Docker container on host

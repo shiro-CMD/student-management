@@ -1,0 +1,24 @@
+# POD 2 : search-service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod2-search
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod2
+  template:
+    metadata:
+      labels:
+        app: pod2
+    spec:
+      containers:
+        - name: search-service
+          image: search-service:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5002
+          env:
+            - name: MONGO_URI
+              value: "mongodb://host.minikube.internal:27017"  # MongoDB Docker container on host
